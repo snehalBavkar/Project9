@@ -1,0 +1,83 @@
+import numpy as np
+import pandas as pd
+import seaborn as sns
+#import tensorflow as tf
+import  matplotlib.pyplot as plt
+from  sklearn.feature_selection import f_classif, SelectKBest
+from sklearn.metrics import mean_squared_error
+from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.preprocessing import LabelEncoder, StandardScaler, MinMaxScaler
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+import numpy as np
+from sklearn import utils
+
+lr=LogisticRegression()
+
+df=pd.read_csv("C:/Users/Home/Documents/Snehal/train.csv")
+print(df)
+
+
+#Dealing with Missing Values
+df.isnull().sum()
+
+x=df.drop(columns="Activity",axis=1)
+#x= pd.DataFrame(np.c_[df['lstat'],df['rm'],df['crim'],df['age']],columns=['lstat','rm','crim','age'])
+y=df["Activity"]
+
+y.value_counts()
+
+le = LabelEncoder()
+le.fit(y)
+y=le.transform(y)
+
+
+scaler = StandardScaler()
+scaler.fit(x)
+x=scaler.transform(x)
+
+x_train,x_test,y_train,y_test=train_test_split(x,y,random_state=0,test_size=0.3)
+
+
+#
+# #print(x_train)
+# #print(x_test)
+# print(y_train)
+# #print(y_test)
+#
+#
+lr.fit(x_train,y_train)
+y_pred=lr.predict(x_test)
+
+print('Mean Squared Error',np.sqrt(mean_squared_error(y_test,y_pred)))
+
+fig = plt.figure(figsize=(8,5))
+ax = fig.add_axes([0,0,1,1])
+ax.set_title(" Count of each activity",fontsize = 15)
+plt.tick_params(labelsize = 10)
+sns.countplot(x ="Activity",data=df)
+for i in ax.patches:
+    ax.text(x=i.get_x()+0.2, y=i.get_height()+10, s = str(i.get_height()), fontsize = 20, color = "grey")
+plt.xlabel("")
+plt.ylabel("Count",  fontsize = 15)
+plt.tick_params(labelsize = 13)
+plt.xticks(rotation = 40)
+plt.show()
+
+#OUTPUT
+'''
+tBodyAcc-mean()-X  tBodyAcc-mean()-Y  ...  subject          Activity
+0              0.288585          -0.020294  ...        1          STANDING
+1              0.278419          -0.016411  ...        1          STANDING
+2              0.279653          -0.019467  ...        1          STANDING
+3              0.279174          -0.026201  ...        1          STANDING
+4              0.276629          -0.016570  ...        1          STANDING
+...                 ...                ...  ...      ...               ...
+7347           0.299665          -0.057193  ...       30  WALKING_UPSTAIRS
+7348           0.273853          -0.007749  ...       30  WALKING_UPSTAIRS
+7349           0.273387          -0.017011  ...       30  WALKING_UPSTAIRS
+7350           0.289654          -0.018843  ...       30  WALKING_UPSTAIRS
+7351           0.351503          -0.012423  ...       30  WALKING_UPSTAIRS
+
+Mean Squared Error 0.14122890249937725
+'''
